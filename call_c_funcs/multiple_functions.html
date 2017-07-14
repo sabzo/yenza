@@ -1,0 +1,13 @@
+<html>
+<head>
+<title>WASM: Calling C functions from Javascript</title>
+</head>
+<body>
+<h3> Calling C functions from javascript</h3>
+<p>** C functions must be explicitly exported to be called inside Javascript**</p>
+<p>emcc multiple_functions.c -o multiple_functions.js -s WASM=1 -O3 -s EXPORTED_FUNCTIONS="['_main', '_func1', '_func2', '_func3']"</p>
+<b>format</b>: <i>  var x = Module.cwrap('func-name', 'return type', ['1st argument type', '2nd arg type']); </i>
+<p>Inside Console: func3 = Module.cwrap('func3', null, ['number'])</p>
+<script src="multiple_functions.js"></script>
+</body>
+</html>
