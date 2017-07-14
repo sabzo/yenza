@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Emscripten-Generated Code</title>
+  </head>
+  <body>
+  <h1> Using an HTML Template and showing output inside a div below</h1>
+  <h4> emcc will use the minimal shell html template to create the final html document</h4>
+  <div id="output">Inside div#output:</div>
+    <script>
+    var Module = {
+      print: function(text) { 
+	document.getElementById("output").innerHTML += '<p>' + text + '</p>';
+      } 
+    }
+   </script>
+   <!-- the following SCRIPT tag is specific to Emscripten compiler (emcc) it uses this to link to the generated javascript !-->
+    {{{ SCRIPT }}}
+  </body>
+</html>
