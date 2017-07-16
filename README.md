@@ -7,6 +7,11 @@ A first look into Web Assembly using C
 - [Web Assembly]  https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#platform-notes-installation-instructions-portable-sdk 
 - Latest Browser: Firefox, Chrome, IE, Edge
   
+# Examples
+- Running a C Program on the Browser and making simple output
+- Passing arguments to C functions and using a custom HTML Template
+- Example App: Running a Recommendation System entirely in the browser (code from: http://github.com/sabzo/foonda)
+
 # References
   - [Emscripten APIs] (http://kripken.github.io/emscripten-site/docs/api_reference/index.html)
 

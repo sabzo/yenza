@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>A recommendation system running entirely in the browser</title>
+  </head>
+  <body>
+  <h1>Demo of a Recommendation System running entirely on the browser</h1>
+  <h3>Inside console call: Module.callMain() and follow prompts.</h3>
+  ** If alert keeps repeating hit cancel **
+  <div id="output"></div>
+    <script>
+    var Module = {
+      print: function(text) { 
+	if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+	document.getElementById("output").innerHTML += '<p>' + text + '</p>';
+      },
+     noInitialRun: true,
+     noExitRuntime: true 
+    }
+   </script>
+   <!-- the following SCRIPT tag is specific to Emscripten compiler (emcc) it uses this to link to the generated javascript !-->
+    <script async type="text/javascript" src="bare_minimal.js"></script>
+  </body>
+</html>
