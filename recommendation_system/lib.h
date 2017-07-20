@@ -10,7 +10,7 @@
 #define MAXLINEWORDS 20
 #define MAXRECOMMENDATIONS 25
 #define UIDSIZE 4
-// Create a Custom Hahs Type
+// Create a Custom Hash Type
 #define HASH(name, type_key, type_next, type_obj, size)  \
   typedef struct name { \
     type_key key; \
@@ -82,11 +82,14 @@ typedef struct rating {
   float score;
 } rating;
 
-// type for ranking function
+// typedef for ranking function
 typedef void (*rank_t) (const void *heuristic, void *sub_result, void *result);
 
-// type for similarity function
+// typedef for similarity function
 typedef void (*similarity_t) (void *result, void *this, const void *that, int len_that);
+
+// typedef for add item function
+typedef void * (*item_add)(void *, rating);
 
 // Searches for a value in specified array
 // TODO Better implementation would be to use a HASH but at moment not interested
@@ -152,7 +155,7 @@ int get_num_lines(char *filename) {
 }
 
 /* Returns an Array of words. Remember to Free Array after use */
-char ** delim(char *str, char delim) {
+char ** delim(char **words, char *str, char delim) {
   int num_words = 0;
   char char_counter = 0; // num of chars in word
   char wordsize[MAXLINEWORDS];
@@ -170,12 +173,11 @@ char ** delim(char *str, char delim) {
 	}
   }
   str -= str_ptr_offset;
-  // allocate words of words
-  char **words = malloc(num_words * sizeof(char *));
+
   // allocate for each word in list
   for (pos = 0; pos < num_words; pos++)
-	*words++ = malloc(wordsize[pos] * sizeof(char *));
-  words -= pos; // *words temporarily goes to dangerous territory array overbound. On a separate note resetting so word can start from first letter	
+	words[pos] = malloc(wordsize[pos] * sizeof(char *));
+
   char_counter = 0;
   while ((c = *str++) != '\0' && c != '\n') {
     if (c == delim) {
@@ -195,6 +197,35 @@ char ** delim(char *str, char delim) {
   return words;
 }
 
+/* Load recommendation dataset */
+void load_data(char *filename, int line_length, int max_line_words, item_add add) {
+  FILE *fp;
+  char **words = calloc(max_line_words + 1, sizeof(char *));
+  char *line = malloc(line_length);
+  
+  // Open ratings file
+   if ((fp = fopen (filename, "r")) == NULL) 
+     error("Unable to open file \n");
+
+   // Add/update user ratings
+   while (fgets(line, line_length, fp) != NULL) {
+       delim(words, line, ','); 
+       char *uid = *words;
+       char *title = *(words + 1);
+       char *_rating = *(words + 2);
+       rating r = {title, atof(_rating)};
+       add(uid, r);
+   }
+   free(line);
+   char **temp = words;
+   while (*words) {
+       free(*words);
+     words++;
+   }
+   free (temp);
+   fclose(fp);
+}
+
 /* Recommend 
  ** Similarity()
   - Finds similarity of this to that
@@ -210,4 +241,3 @@ void recommend(void *result, void *sub_result, void *this, const void *that, int
   // rank results
   rank(heuristic, sub_result, result);
 }
-

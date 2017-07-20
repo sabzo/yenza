@@ -4,23 +4,39 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>A recommendation system running entirely in the browser</title>
+    <style type="text/css">
+     div#output {
+       float:left;
+       width:400px;
+     }
+     div#form {
+       float:left;
+       width:400px;
+     }
+  </style> 
   </head>
   <body>
   <h1>Demo of a Recommendation System running entirely on the browser</h1>
-  <h3>Inside console call: Module.callMain() and follow prompts.</h3>
-  ** If alert keeps repeating hit cancel **
   <div id="output"></div>
+  <div id="form">
+    <form action="#" method="" id="r">
+       <input type="text" id="uid" placeholder="Enter userID"></input>
+       <button type="submit" value="submit" id="submit">Submit</button>
+  </form>
+   
     <script>
     var Module = {
       print: function(text) { 
 	if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
 	document.getElementById("output").innerHTML += '<p>' + text + '</p>';
+	console.log(text + "\n");
       },
-     noInitialRun: true,
+     noInitialRun: false,
      noExitRuntime: true 
     }
-   </script>
+    </script>
    <!-- the following SCRIPT tag is specific to Emscripten compiler (emcc) it uses this to link to the generated javascript !-->
     <script async type="text/javascript" src="bare_minimal.js"></script>
+ 
   </body>
 </html>

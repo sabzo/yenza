@@ -45,8 +45,7 @@ int nearby_users(distance *ud, const user *u, user **users, int len) {
     while (tmp && tmp->key != NULL && total < len) { 
       distance d = {tmp->key, euclidean_distance(u->value, tmp->value)};
       if (d.distance) {
-        ud[total++] = d;
-        num_users++;
+        ud[total++] = d; num_users++;
       }
       tmp = tmp->next;
     }
@@ -79,44 +78,29 @@ void rank (user *heuristic, distance *d, rating **results) {
   }
 }
 
+
+char *filename; 
+char *uid = NULL; // user id 
+user *u;
+distance distances[MAXDISTANCES];
+rating *results[MAXRECOMMENDATIONS + 1] = {0}; 
+int i = 0;
+
+void _recommend(char *);
+
 int main(int argc, char *argv[]) {
-
-  FILE *fp;
-  char line[MAXLINE]; // each line
-  char *filename; 
-  char *uid = NULL; // user id 
-  user *u;
-  distance distances[MAXDISTANCES];
-  int total_distances; 
-  rating *results[MAXRECOMMENDATIONS + 1] = {0}; 
-  int i = 0;
-
-  for (int i = 0; i < argc; i++) 
-    printf("arg %d is %s\n", i, argv[i]);
-  // Get userID from commandline
-  if (argc == 2)
-    uid = argv[1];
-
    // Open ratings file
-   filename = "ratings.csv"; //argv[1];
-   if ((fp = fopen (filename, "r")) == NULL) 
-     error("Unable to open file \n");
+   filename = "ratings.csv";
+   load_data(filename, MAXLINE, 4, (item_add) _user_add); 
+   
+ return 0;
+}
 
-   // Add/update user ratings
-   while (fgets(line, MAXLINE, fp) != NULL) {
-       char **words = delim(line, ','); 
-       char *uid = *words;
-       char *title = *(words + 1);
-       char *_rating = *(words + 2);
-       rating r = {title, atof(_rating)};
-       
-       // printf("User %s, title: %s, rating: %s\n", uid, title, _rating);
-       _user_add(uid, r);
-   }
-
+void _recommend(char *uid) {
    // Allow user to choose a userID
    if (uid == NULL) {
      int i = 0;
+
      printf("Enter a user id to find ratings\n");
      uid = calloc(UIDSIZE + 1, sizeof(char)); // +1 for \0 
      while (i < UIDSIZE && (uid[i] = getc(stdin)) != '\n') 
@@ -129,11 +113,11 @@ int main(int argc, char *argv[]) {
    if ((u = _user_find(uid)) != NULL) {
        int i;
        for (i = 0; i < u->v_it; i++) {
-         rating r = u->value[i];
+	 rating r = u->value[i];
        }
     }  
    
-   recommend(results, distances, u, (const void *) _user_hash, MAXDISTANCES, (const void*) u, (similarity_t) nearby_users, (rank_t) rank);
+  recommend(results, distances, u, _user_hash, MAXDISTANCES, (const void*) u, (similarity_t) nearby_users, (rank_t) rank);
 
   printf("\nRecommendations for user %s are:\n", u->key);
   
@@ -141,7 +125,8 @@ int main(int argc, char *argv[]) {
     rating *r = results[i];
     printf("%d. %s score: %f\n", i+1, r->key, r->score);
     i++;
-}
-  
-   return 0;
+  }
+  // reset user_id and i;
+  uid = NULL;
+  i = 0;
 }
